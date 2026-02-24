@@ -30,23 +30,10 @@ pip install -r requirements.txt
 Add OPENAI_API_KEY to .env file
 streamlit run app.py
 
+## Link to the App
+
+https://resume-analyzer-rag-hjgjzjpcx85tgs7a2pjudz.streamlit.app
+
 ## Author
 
 Kanupriya Guha | Data Science Portfolio | 2026
-```
-
-Save ✅
-
----
-
-## STEP 10 — Check Your File Structure
-
-Your folder should look exactly like this:
-```
-resume-analyzer-rag/
-├── venv/
-├── .env
-├── rag_pipeline.py
-├── app.py
-├── requirements.txt
-└── README.md
