@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain_core.prompts import PromptTemplate
@@ -12,7 +12,7 @@ import tempfile
 load_dotenv()
 
 # ── CONFIGURATION ──
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
 COLLECTION_NAME = "resume_collection"
@@ -21,11 +21,11 @@ CHROMA_PERSIST_DIR = "./chroma_db"
 def load_and_chunk_pdf(pdf_path: str) -> list:
     """
     Load a PDF and split it into overlapping chunks.
-    
+
     Why chunking?
-    - LLMs haven token limits - can't send entire document at once
+    - LLMs have token limits - can't send entire document at once
     - Smaller chunks = more precise retrieval
-    - Overlap ensures contect isn't lost at chunk boundaries
+    - Overlap ensures context isn't lost at chunk boundaries
     """
     print(f"Loading PDF: {pdf_path}")
 
@@ -50,25 +50,25 @@ def load_and_chunk_pdf(pdf_path: str) -> list:
 
 def create_vector_store(chunks: list) -> Chroma:
     """
-    Convert chunks to embeddingd and store in ChromaDB.
-    
-    Why embeddingd?
-    - Embeddingd convert text to vectors (lists of numbers)
-    - Similar meaning = similar vectors = close in vector spacce
+    Convert chunks to embeddings and store in ChromaDB.
+
+    Why embeddings?
+    - Embeddings convert text to vectors (lists of numbers)
+    - Similar meaning = similar vectors = close in vector space
     - Enable semantic search - finds meaning, not just keywords
-    
+
     Why ChromaDB?
     - Local vector database - no external service needed
     - Persists to disk so you don't re-embed on every run
     - Fast similarity search
     """
 
-    print("Creating embeddingd and storing in ChromaDB...")
+    print("Creating embeddings and storing in ChromaDB...")
 
-    # OpenAI embeddingd - converts text to 1536-dimensional vectors
-    embeddings = OpenAIEmbeddings(
-        openai_api_key=OPENAI_API_KEY,
-        model="text-embedding-ada-002"
+    # Gemini embeddings - converts text to vectors
+    embeddings = GoogleGenerativeAIEmbeddings(
+        google_api_key=GOOGLE_API_KEY,
+        model="models/text-embedding-004"
     )
 
     # Create vector store from chunks
@@ -82,61 +82,45 @@ def create_vector_store(chunks: list) -> Chroma:
     print(f"Vector store created with {len(chunks)} chunks")
     return vector_store
 
-def load_existing_vector_store() -> Chroma:
-    """
-    Load an already-creataed vector store from disk."""
-    embeddingd = OpenAIEmbeddings(
-        openai_api_key=OPENAI_API_KEY,
-        model="text-embedding-ada-002"
-    )
-
-    vectore_store = Chroma(
-        collection_name=COLLECTION_NAME,
-        embedding_function=embeddings,
-        persist_directory=CHROMA_PERSIST_DIR
-    )
-
-    return vectore_store
-
 def build_rag_chain(vector_store: Chroma) -> RetrievalQA:
     """
     Build the RAG chain connecting retrieval to generation.
-    
+
     How RAG works:
     1. User asks a question
     2. Question gets embedded into a vector
     3. ChromaDB finds the 4 most similar chunks (retrieval)
-    4. Retrived chunks + question get sent to LLM (augmented generation)
+    4. Retrieved chunks + question get sent to LLM (augmented generation)
     5. LLM generates answer grounded in retrieved content
-    
-    Why this reduce hallucinations:
-    - LLM is given the actual docuemnt content
+
+    Why this reduces hallucinations:
+    - LLM is given the actual document content
     - Instructed to answer ONLY from that content
     - If answer isn't in document, it says so
     """
 
     # The LLM that generates final answers
-    llm = ChatOpenAI(
-        openai_api_key=OPENAI_API_KEY,
-        model="gpt-3.5-turbo",
+    llm = ChatGoogleGenerativeAI(
+        google_api_key=GOOGLE_API_KEY,
+        model="gemini-1.5-flash",
         temperature=0
     )
 
     # Custom prompt that keeps the LLM grounded
     prompt_template = """You are an expert career coach and resume analyst.
-    
+
     Use ONLY the following context from the resume to answer the question.
     If the information is not in the context provided, say "I don't see that information in the resume."
     Do not make up or assume information that isn't explicitly in the resume.
-    
+
     Be specific and actionable in your feedback.
     Reference specific sections, skills, or experiences from the resume when relevant.
-    
+
     Context from resume:
     {context}
-    
+
     Question: {question}
-    
+
     Detailed Answer:"""
 
     PROMPT = PromptTemplate(
@@ -186,12 +170,12 @@ def answer_without_rag(question: str) -> str:
     """
     Answer the same question WITHOUT RAG - just raw LLM.
     Used to demonstrate the difference RAG makes.
-    The answer will be vague because the LLM has no resume contect.
+    The answer will be vague because the LLM has no resume context.
     """
 
-    llm = ChatOpenAI(
-        openai_api_key=OPENAI_API_KEY,
-        model="gpt-3.5-turbo",
+    llm = ChatGoogleGenerativeAI(
+        google_api_key=GOOGLE_API_KEY,
+        model="gemini-1.5-flash",
         temperature=0
     )
 
@@ -237,4 +221,4 @@ SUGGESTED_QUESTIONS = [
     "What is my biggest weakness as a candidate based on this resume?",
     "What roles am I best qualified for right now?",
     "Write me a 3-sentence professional summary based on this resume",
-]        
+]

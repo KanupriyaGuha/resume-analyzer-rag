@@ -61,7 +61,7 @@ st.markdown("""
 # ── SIDEBAR ──
 with st.sidebar:
     st.markdown("## 🤖 Resume Analyzer")
-    st.markdown("**Powered by RAG + GPT-3.5**")
+    st.markdown("**Powered by RAG + Gemini**")
     st.divider()
 
     st.markdown("### How It Works")
