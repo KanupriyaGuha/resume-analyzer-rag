@@ -201,7 +201,7 @@ def answer_without_rag(question: str) -> str:
     Answer as best you can based on general knowledge only."""
 
     response = llm.invoke(prompt)
-    return response.strip()
+    return response.content
 
 def process_uploaded_pdf(uploaded_file) -> tuple:
     """
