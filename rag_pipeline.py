@@ -2,7 +2,8 @@ import os
 from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain_core.prompts import PromptTemplate
@@ -65,10 +66,9 @@ def create_vector_store(chunks: list) -> Chroma:
 
     print("Creating embeddings and storing in ChromaDB...")
 
-    # Gemini embeddings - converts text to vectors
-    embeddings = GoogleGenerativeAIEmbeddings(
-        google_api_key=GOOGLE_API_KEY,
-        model="models/text-embedding-004"
+    # HuggingFace embeddings - runs locally, no API key needed
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
     # Create vector store from chunks
