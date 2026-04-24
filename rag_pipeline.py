@@ -100,7 +100,7 @@ def build_rag_chain(vector_store: Chroma) -> RetrievalQA:
     # The LLM that generates final answers
     llm = ChatGoogleGenerativeAI(
         google_api_key=GOOGLE_API_KEY,
-        model="gemini-1.5-flash",
+        model="gemini-2.0-flash",
         temperature=0
     )
 
@@ -173,7 +173,7 @@ def answer_without_rag(question: str) -> str:
 
     llm = ChatGoogleGenerativeAI(
         google_api_key=GOOGLE_API_KEY,
-        model="gemini-1.5-flash",
+        model="gemini-2.0-flash",
         temperature=0
     )
 

@@ -3,6 +3,12 @@
 
 import streamlit as st
 import os
+
+# Check for API key before anything else
+if not os.getenv("GOOGLE_API_KEY"):
+    st.error("⚠️ GOOGLE_API_KEY is not set. Go to Manage App → Settings → Secrets and add: GOOGLE_API_KEY = \"your-key-here\"")
+    st.stop()
+
 from rag_pipeline import (
     process_uploaded_pdf,
     answer_with_rag,
