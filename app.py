@@ -5,8 +5,8 @@ import streamlit as st
 import os
 
 # Check for API key before anything else
-if not os.getenv("GROQ_API_KEY"):
-    st.error("⚠️ GROQ_API_KEY is not set. Go to Manage App → Settings → Secrets and add: GROQ_API_KEY = \"your-key-here\"")
+if not os.getenv("GITHUB_TOKEN"):
+    st.error("⚠️ GITHUB_TOKEN is not set. Go to Manage App → Settings → Secrets and add: GITHUB_TOKEN = \"your-token-here\"")
     st.stop()
 
 from rag_pipeline import (
@@ -67,7 +67,7 @@ st.markdown("""
 # ── SIDEBAR ──
 with st.sidebar:
     st.markdown("## 🤖 Resume Analyzer")
-    st.markdown("**Powered by RAG + LLaMA 3**")
+    st.markdown("**Powered by RAG + GPT-4o mini**")
     st.divider()
 
     st.markdown("### How It Works")

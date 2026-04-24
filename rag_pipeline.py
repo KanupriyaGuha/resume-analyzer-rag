@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
@@ -13,7 +13,7 @@ import tempfile
 load_dotenv()
 
 # ── CONFIGURATION ──
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
 COLLECTION_NAME = "resume_collection"
@@ -98,9 +98,10 @@ def build_rag_chain(vector_store: Chroma) -> RetrievalQA:
     """
 
     # The LLM that generates final answers
-    llm = ChatGroq(
-        groq_api_key=GROQ_API_KEY,
-        model_name="llama-3.1-8b-instant",
+    llm = ChatOpenAI(
+        base_url="https://models.inference.ai.azure.com",
+        api_key=GITHUB_TOKEN,
+        model="gpt-4o-mini",
         temperature=0
     )
 
@@ -171,9 +172,10 @@ def answer_without_rag(question: str) -> str:
     The answer will be vague because the LLM has no resume context.
     """
 
-    llm = ChatGroq(
-        groq_api_key=GROQ_API_KEY,
-        model_name="llama-3.1-8b-instant",
+    llm = ChatOpenAI(
+        base_url="https://models.inference.ai.azure.com",
+        api_key=GITHUB_TOKEN,
+        model="gpt-4o-mini",
         temperature=0
     )
 
