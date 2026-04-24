@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain_core.prompts import PromptTemplate
@@ -66,10 +66,8 @@ def create_vector_store(chunks: list) -> Chroma:
 
     print("Creating embeddings and storing in ChromaDB...")
 
-    # HuggingFace embeddings - runs locally, no API key needed
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
+    # FastEmbed - lightweight ONNX embeddings, no API key or torch needed
+    embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 
     # Create vector store from chunks
     vector_store = Chroma.from_documents(
