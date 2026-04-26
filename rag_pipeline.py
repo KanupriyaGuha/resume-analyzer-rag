@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
@@ -13,7 +13,7 @@ import tempfile
 load_dotenv()
 
 # ── CONFIGURATION ──
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
 COLLECTION_NAME = "resume_collection"
@@ -98,10 +98,9 @@ def build_rag_chain(vector_store: Chroma) -> RetrievalQA:
     """
 
     # The LLM that generates final answers
-    llm = ChatOpenAI(
-        base_url="https://models.inference.ai.azure.com",
-        api_key=GITHUB_TOKEN,
-        model="gpt-4o-mini",
+    llm = ChatGoogleGenerativeAI(
+        google_api_key=GOOGLE_API_KEY,
+        model="gemini-2.0-flash",
         temperature=0
     )
 
@@ -172,10 +171,9 @@ def answer_without_rag(question: str) -> str:
     The answer will be vague because the LLM has no resume context.
     """
 
-    llm = ChatOpenAI(
-        base_url="https://models.inference.ai.azure.com",
-        api_key=GITHUB_TOKEN,
-        model="gpt-4o-mini",
+    llm = ChatGoogleGenerativeAI(
+        google_api_key=GOOGLE_API_KEY,
+        model="gemini-2.0-flash",
         temperature=0
     )
 
